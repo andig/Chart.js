@@ -4,6 +4,8 @@ os:
   - linux
   - osx
 
+sudo: true
+
 addons:
   firefox: latest
   chrome: stable
@@ -15,16 +17,19 @@ before_install:
   - export CHROME_BIN=/usr/bin/google-chrome
   - export DISPLAY=:99.0
   - if [ "$TRAVIS_OS_NAME" != "osx" ]; then sh -e /etc/init.d/xvfb start; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )& fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then ( sudo Xvfb :99 -ac -screen 0 1024x768x8; echo ok )& fi
 
 install:
-  - source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
-  - npm install
-  - npm install -g gulp
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+      source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+      npm install
+      npm install -g gulp
+    fi
 
 script:
   - |
-    if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osxy" ]]; then
       gulp build
       gulp test --coverage
       gulp docs
