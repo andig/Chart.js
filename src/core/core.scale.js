@@ -378,6 +378,7 @@ module.exports = function(Chart) {
 			var tickFont = parseFontOptions(tickOpts);
 			var tickMarkLength = opts.gridLines.tickMarkLength;
 			var scaleLabelLineHeight = parseLineHeight(scaleLabelOpts);
+			var scaleLabelPadding = helpers.options.toPadding(scaleLabelOpts.padding);
 
 			// Width
 			if (isHorizontal) {
@@ -396,10 +397,11 @@ module.exports = function(Chart) {
 
 			// Are we showing a title for the scale?
 			if (scaleLabelOpts.display && display) {
+				var padding = scaleLabelPadding.top + scaleLabelPadding.bottom;
 				if (isHorizontal) {
-					minSize.height += scaleLabelLineHeight;
+					minSize.height += scaleLabelLineHeight + padding;
 				} else {
-					minSize.width += scaleLabelLineHeight;
+					minSize.width += scaleLabelLineHeight + padding;
 				}
 			}
 
@@ -647,6 +649,7 @@ module.exports = function(Chart) {
 
 			var scaleLabelFontColor = helpers.valueOrDefault(scaleLabel.fontColor, globalDefaults.defaultFontColor);
 			var scaleLabelFont = parseFontOptions(scaleLabel);
+			var scaleLabelPadding = helpers.options.toPadding(scaleLabel.padding);
 			var labelRotationRadians = helpers.toRadians(me.labelRotation);
 
 			var itemsToDraw = [];
@@ -811,11 +814,13 @@ module.exports = function(Chart) {
 				if (isHorizontal) {
 					scaleLabelX = me.left + ((me.right - me.left) / 2); // midpoint of the width
 					scaleLabelY = options.position === 'bottom' ? me.bottom - halfLineHeight : me.top + halfLineHeight;
+					scaleLabelY += options.position === 'bottom' ? -scaleLabelPadding.bottom : scaleLabelPadding.top;
 				} else {
 					var isLeft = options.position === 'left';
 					scaleLabelX = isLeft ? me.left + halfLineHeight : me.right - halfLineHeight;
 					scaleLabelY = me.top + ((me.bottom - me.top) / 2);
 					rotation = isLeft ? -0.5 * Math.PI : 0.5 * Math.PI;
+					scaleLabelX += isLeft ? scaleLabelPadding.top : -scaleLabelPadding.top;
 				}
 
 				context.save();
